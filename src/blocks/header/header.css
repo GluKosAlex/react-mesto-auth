@@ -1,0 +1,13 @@
+.header {
+  display: flex;
+
+  padding-bottom: 32px;
+
+  border-bottom: 1px solid rgba(54, 54, 54, .7);
+}
+
+@media screen and (min-width: 619px) {
+  .header {
+    padding-bottom: 41px;
+  }
+}

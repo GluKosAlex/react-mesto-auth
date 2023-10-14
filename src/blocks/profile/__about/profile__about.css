@@ -1,0 +1,15 @@
+.profile__about {
+  padding: 0;
+  margin: 0;
+  padding-top: 8px;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+@media screen and (min-width: 619px) {
+  .profile__about {
+    font-size: 18px;
+  }
+}

@@ -1,0 +1,28 @@
+.form__button {
+  box-sizing: border-box;
+
+  margin-top: 16px;
+  padding: 0;
+
+  min-height: 46px;
+  border: 0;
+  border-radius: 2px;
+  background-color: rgba(0, 0, 0, 1);
+  color: var(--main-text-color);
+  cursor: pointer;
+}
+
+.form__button:hover,
+.form__button:focus {
+  outline: 0;
+  background-color: rgba(0, 0, 0, .8);
+}
+
+@media screen and (min-width: 619px) {
+  .form__button {
+    margin-top: 19px;
+
+    font-size: 18px;
+    min-height: 50px;
+  }
+}

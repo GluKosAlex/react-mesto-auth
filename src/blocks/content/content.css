@@ -1,0 +1,22 @@
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 36px;
+  flex-grow: 1; /* for sticky footer */
+
+  box-sizing: border-box;
+  max-width: 320px;
+}
+
+@media screen and (min-width: 619px) {
+  .content {
+    gap: 50px;
+    max-width: 619px;
+  }
+}
+
+@media screen and (min-width: 920px) {
+  .content {
+    max-width: 920px;
+  }
+}

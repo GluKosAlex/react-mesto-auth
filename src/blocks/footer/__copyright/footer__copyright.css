@@ -1,0 +1,16 @@
+.footer__copyright {
+  color: var(--main-text-mid-color);
+  text-decoration: none;
+  transition: opacity .2s ease;
+}
+
+.footer__copyright:hover,
+.footer__copyright:focus {
+  opacity: .9;
+}
+
+@media screen and (min-width: 619px) {
+  .footer__copyright {
+    font-size: 18px;
+  }
+}
