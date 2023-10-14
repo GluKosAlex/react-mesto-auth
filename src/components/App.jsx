@@ -1,5 +1,6 @@
 import { React, useState, useEffect } from 'react';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
+import { Routes, Route } from 'react-router-dom';
 
 import Header from './Header';
 import Main from './Main';
@@ -12,10 +13,14 @@ import DeleteConfirmModal from './DeleteConfirmModal';
 import api from './../utils/api';
 import useEscapeKey from './../utils/useEscapeKey';
 import useOutsideClick from './../utils/useOverlayClick';
+import ProtectedRoute from './ProtectedRoute';
 
 import avatarPlaceholder from '../images/avatar_placeholder.svg';
 
 function App() {
+  const loggedInFromStorage = JSON.parse(localStorage.getItem('loggedIn')) || 'false';
+  const [loggedIn, setLoggedIn] = useState(JSON.parse(loggedInFromStorage));
+
   const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
   const [isAddPlaceModalOpen, setIsAddPlaceModalOpen] = useState(false);
   const [isEditAvatarModalOpen, setIsEditAvatarModalOpen] = useState(false);
@@ -38,6 +43,7 @@ function App() {
   });
 
   useEffect(() => {
+
     Promise.all([api.getUserInfo(), api.getInitialCards()])
       .then(([userData, cardsData]) => {
         setCurrentUser(userData);
@@ -87,7 +93,6 @@ function App() {
       .then(() => closeAllModals())
       .catch(err => console.error(err))
       .finally(() => setEditProfileBtnText('Сохранить'));
-
   }
 
   function handleUpdateAvatar(newAvatar) {
@@ -142,49 +147,80 @@ function App() {
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
-      <Header />
+      <Routes>
+        <Route
+          path='/'
+          element={
+            <ProtectedRoute loggedIn={loggedIn}>
+              <Header />
 
-      <Main
-        cards={cards}
-        onEditProfile={handleEditProfileClick}
-        onAddPlace={handleAddPlaceClick}
-        onEditAvatar={handleEditAvatarClick}
-        onCardClick={handleCardClick}
-        onCardLike={handleCardLike}
-        onCardDelete={handleCardDeleteClick}
-      />
+              <Main
+                cards={cards}
+                onEditProfile={handleEditProfileClick}
+                onAddPlace={handleAddPlaceClick}
+                onEditAvatar={handleEditAvatarClick}
+                onCardClick={handleCardClick}
+                onCardLike={handleCardLike}
+                onCardDelete={handleCardDeleteClick}
+              />
 
-      <Footer />
+              <Footer />
 
-      <EditProfileModal
-        isOpen={isEditProfileModalOpen}
-        onClose={closeAllModals}
-        onUpdateUser={handleUpdateUser}
-        btnText={editProfileBtnText}
-      />
+              <EditProfileModal
+                isOpen={isEditProfileModalOpen}
+                onClose={closeAllModals}
+                onUpdateUser={handleUpdateUser}
+                btnText={editProfileBtnText}
+              />
 
-      <EditAvatarModal
-        isOpen={isEditAvatarModalOpen}
-        onClose={closeAllModals}
-        onUpdateAvatar={handleUpdateAvatar}
-        btnText={editAvatarBtnText}
-      />
+              <EditAvatarModal
+                isOpen={isEditAvatarModalOpen}
+                onClose={closeAllModals}
+                onUpdateAvatar={handleUpdateAvatar}
+                btnText={editAvatarBtnText}
+              />
 
-      <AddPlaceModal
-        isOpen={isAddPlaceModalOpen}
-        onClose={closeAllModals}
-        onAddPlace={handleAddPlace}
-        btnText={addPlaceBtnText}
-      />
+              <AddPlaceModal
+                isOpen={isAddPlaceModalOpen}
+                onClose={closeAllModals}
+                onAddPlace={handleAddPlace}
+                btnText={addPlaceBtnText}
+              />
 
-      <DeleteConfirmModal
-        isOpen={isDeleteConfirmModalOpen}
-        onClose={closeAllModals}
-        onConfirm={handleCardDelete}
-        btnText={deleteConfirmBtnText}
-      ></DeleteConfirmModal>
+              <DeleteConfirmModal
+                isOpen={isDeleteConfirmModalOpen}
+                onClose={closeAllModals}
+                onConfirm={handleCardDelete}
+                btnText={deleteConfirmBtnText}
+              ></DeleteConfirmModal>
 
-      <ModalWithImage card={selectedCard} onClose={closeAllModals} isOpen={isImageModalOpen} />
+              <ModalWithImage
+                card={selectedCard}
+                onClose={closeAllModals}
+                isOpen={isImageModalOpen}
+              />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path='sign-up'
+          element={
+            <>
+              <Header />
+              <h1>для регистрации пользователя</h1>
+            </>
+          }
+        />
+        <Route
+          path='sign-in'
+          element={
+            <>
+              <Header />
+              <h1> для авторизации пользователя</h1>
+            </>
+          }
+        />
+      </Routes>
     </CurrentUserContext.Provider>
   );
 }
