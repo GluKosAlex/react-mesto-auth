@@ -10,12 +10,13 @@
   background-color: rgba(0, 0, 0, 1);
   color: var(--main-text-color);
   cursor: pointer;
+  transition: opacity 0.2s ease;
 }
 
-.form__button:hover,
-.form__button:focus {
+.form__button:not(:disabled):hover,
+.form__button:not(:disabled):focus {
   outline: 0;
-  background-color: rgba(0, 0, 0, .8);
+  opacity: 0.8;
 }
 
 @media screen and (min-width: 619px) {

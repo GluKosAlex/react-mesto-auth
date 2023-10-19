@@ -1,0 +1,8 @@
+.modal__icon {
+  display: block;
+  width: 120px;
+  height: 120px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}

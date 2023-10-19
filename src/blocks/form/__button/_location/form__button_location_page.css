@@ -1,0 +1,17 @@
+.form__button_location_page {
+  margin-top: 144px;
+
+  background-color: var(--main-text-color);
+  color: var(--main-bg-color);
+}
+
+.form__button_location_page:not(:disabled):hover,
+.form__button_location_page:not(:disabled):focus {
+  opacity: 0.85;
+}
+
+@media screen and (min-width: 619px) {
+  .form__button_location_page {
+    margin-top: 187px;
+  }
+}

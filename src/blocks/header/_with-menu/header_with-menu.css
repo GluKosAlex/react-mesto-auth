@@ -1,0 +1,12 @@
+.header_with-menu {
+  flex-direction: column-reverse;
+  align-items: stretch;
+  position: relative;
+}
+
+@media screen and (min-width: 619px) {
+  .header_with-menu {
+    flex-direction: row;
+    align-items: flex-end;
+  }
+}

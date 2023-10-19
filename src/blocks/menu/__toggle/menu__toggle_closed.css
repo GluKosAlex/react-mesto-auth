@@ -1,0 +1,15 @@
+.menu__toggle_closed span {
+  width: 24px;
+  height: 3px;
+  opacity: 1;
+}
+
+.menu__toggle_closed::before {
+  width: 24px;
+  transform: rotate(0);
+}
+
+.menu__toggle_closed::after {
+  width: 24px;
+  transform: rotate(0);
+}
