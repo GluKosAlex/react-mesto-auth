@@ -5,7 +5,7 @@ export default function Footer() {
     <footer className='footer page__footer wrapper'>
       <a
         href='https://glukosalex.ru'
-        className='footer__copyright'
+        className='link footer__copyright'
         target='_blank'
         rel='noreferrer noopener'
       >

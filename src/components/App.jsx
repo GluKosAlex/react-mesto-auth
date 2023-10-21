@@ -1,7 +1,9 @@
+// System imports
 import { React, useState, useEffect } from 'react';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Link, useNavigate } from 'react-router-dom';
 
+// Components imports
 import Header from './Header';
 import Main from './Main';
 import Footer from './Footer';
@@ -10,15 +12,29 @@ import EditProfileModal from './EditProfileModal';
 import EditAvatarModal from './EditAvatarModal';
 import AddPlaceModal from './AddPlaceModal';
 import DeleteConfirmModal from './DeleteConfirmModal';
-import api from './../utils/api';
 import useEscapeKey from './../utils/useEscapeKey';
 import useOutsideClick from './../utils/useOverlayClick';
 import ProtectedRoute from './ProtectedRoute';
+import Login from './Login';
+import Register from './Register';
+import InfoTooltip from './InfoTooltip';
 
+// APIs imports
+import api from './../utils/api';
+import auth from './../utils/auth';
+
+// Utils Imports
 import avatarPlaceholder from '../images/avatar_placeholder.svg';
+import successIcon from '../images/icon-success.svg';
+import failIcon from '../images/icon-fail.svg';
+import { INFO_TOOLTIP_TEXT } from '../utils/constants';
 
 function App() {
-  const loggedInFromStorage = JSON.parse(localStorage.getItem('loggedIn')) || 'false';
+  const navigate = useNavigate();
+
+  const { successText, failText } = INFO_TOOLTIP_TEXT;
+
+  const loggedInFromStorage = JSON.parse(localStorage.getItem('loggedIn'));
   const [loggedIn, setLoggedIn] = useState(JSON.parse(loggedInFromStorage));
 
   const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false);
@@ -26,11 +42,14 @@ function App() {
   const [isEditAvatarModalOpen, setIsEditAvatarModalOpen] = useState(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState(false);
   const [isDeleteConfirmModalOpen, setIsDeleteConfirmModalOpen] = useState(false);
+  const [isInfoTooltipOpen, setIsInfoTooltipOpen] = useState(false);
 
   const [editProfileBtnText, setEditProfileBtnText] = useState('Сохранить');
   const [addPlaceBtnText, setAddPlaceBtnText] = useState('Создать');
   const [editAvatarBtnText, setEditAvatarBtnText] = useState('Сохранить');
   const [deleteConfirmBtnText, setDeleteConfirmBtnText] = useState('Да');
+
+  const [infoTooltipContent, setInfoTooltipContent] = useState({ icon: successIcon, text: '' });
 
   const [selectedCard, setSelectedCard] = useState({});
   const [cards, setCards] = useState([]);
@@ -42,8 +61,36 @@ function App() {
     cohort: ''
   });
 
-  useEffect(() => {
+  const [userEmail, setUserEmail] = useState('');
 
+  function authToken(token) {
+    auth
+      .tokenCheck(token)
+      .then(res => {
+        if (!res.ok) {
+          return res.json().then(err => {
+            return Promise.reject(`Ошибка: ${res.status} ${err.message}`);
+          });
+        } else {
+          setLoggedIn(true);
+          // navigate('/');
+          localStorage.setItem('loggedIn', 'true');
+          res.json().then(({data}) => {
+            setUserEmail(data.email)});
+        }
+      })
+      .catch(err => {
+        console.error(err);
+        navigate('/sign-in', {replace: true});
+      });
+  }
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    authToken(token);
+  }, []);
+
+  useEffect(() => {
     Promise.all([api.getUserInfo(), api.getInitialCards()])
       .then(([userData, cardsData]) => {
         setCurrentUser(userData);
@@ -51,6 +98,47 @@ function App() {
       })
       .catch(err => console.error(err));
   }, []);
+
+  function handleRegister({ email, password }) {
+    return auth.register({ email, password }).then(res => {
+      if (!res.ok) {
+        return res.json().then(err => {
+          setInfoTooltipContent({ icon: failIcon, text: err.message || err.error || failText });
+          setIsInfoTooltipOpen(true);
+          return Promise.reject(`Ошибка: ${res.status} ${err.message}`);
+        });
+      } else {
+        return res.json().then(() => {
+          setInfoTooltipContent({ icon: successIcon, text: successText });
+          setIsInfoTooltipOpen(true);
+        });
+      }
+    });
+  }
+
+  function handleLogin({ email, password }) {
+    return auth.authorize({ email, password }).then(res => {
+      if (!res.ok) {
+        return res.json().then(err => {
+          setInfoTooltipContent({ icon: failIcon, text: err.message || failText });
+          setIsInfoTooltipOpen(true);
+          return Promise.reject(`Ошибка: ${res.status} ${err.message}`);
+        });
+      } else {
+        return res.json().then(res => {
+          setLoggedIn(true);
+          setUserEmail(email);
+          localStorage.setItem('token', res.token);
+        });
+      }
+    });
+  }
+
+  function handleLogout() {
+    setLoggedIn(false);
+    localStorage.removeItem('token');
+    navigate('/signin', { replace: true });
+  }
 
   function handleCardLike(card) {
     const isLiked = card.likes.some(like => like._id === currentUser._id);
@@ -139,6 +227,7 @@ function App() {
     setIsEditAvatarModalOpen(false);
     setIsImageModalOpen(false);
     setIsDeleteConfirmModalOpen(false);
+    setIsInfoTooltipOpen(false);
   }
 
   useEscapeKey(closeAllModals);
@@ -152,7 +241,23 @@ function App() {
           path='/'
           element={
             <ProtectedRoute loggedIn={loggedIn}>
-              <Header />
+              <Header className='header_with-menu'>
+                <nav className='header__menu menu menu_closed'>
+                  <p className='menu__user-email'>{userEmail}</p>
+                  <Link to='sign-in' className='link menu__link' onClick={handleLogout} replace>
+                    Выход
+                  </Link>
+                  <button
+                    className='menu__toggle menu__toggle_closed'
+                    onClick={e => {
+                      e.target.classList.toggle('menu__toggle_closed');
+                      e.target.parentNode.classList.toggle('header__menu_closed');
+                    }}
+                  >
+                    <span>Открыть меню</span>
+                  </button>
+                </nav>
+              </Header>
 
               <Main
                 cards={cards}
@@ -202,25 +307,16 @@ function App() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path='sign-up'
-          element={
-            <>
-              <Header />
-              <h1>для регистрации пользователя</h1>
-            </>
-          }
-        />
-        <Route
-          path='sign-in'
-          element={
-            <>
-              <Header />
-              <h1> для авторизации пользователя</h1>
-            </>
-          }
-        />
+        <Route path='sign-up' element={<Register onRegister={handleRegister} />} />
+        <Route path='sign-in' element={<Login onLogin={handleLogin} />} />
       </Routes>
+
+      <InfoTooltip
+        title={infoTooltipContent.text}
+        icon={infoTooltipContent.icon}
+        isOpen={isInfoTooltipOpen}
+        onClose={closeAllModals}
+      />
     </CurrentUserContext.Provider>
   );
 }

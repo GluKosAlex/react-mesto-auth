@@ -19,3 +19,9 @@ export function changeSubmitBtnText(modal, text = 'Сохранение...') {
 export function getSubmitBtnText(modal) {
   return modal.getBtnText();
 }
+
+//Handle multiple input change
+export function handleInputsChange(evt, inputData, setInputData) {
+  const { name, value } = evt.target;
+  setInputData({ ...inputData, [name]: value });
+}

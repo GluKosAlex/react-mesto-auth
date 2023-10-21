@@ -1,15 +1,22 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import Header from './Header';
+import { handleInputsChange } from './../utils/utils';
 
-export default function Register() {
+export default function Register({ onRegister }) {
   const [inputData, setInputData] = useState({ email: '', password: '' });
+  const navigate = useNavigate();
 
-  //Handle multiple input change
-  function handleInputsChange(evt) {
-    const { name, value } = evt.target;
-    setInputData({ ...inputData, [name]: value });
+  function submitHandle(evt) {
+    evt.preventDefault();
+
+    onRegister(inputData)
+      .then(() => setInputData({ email: '', password: '' }))
+      .then(() => {
+        navigate('/sign-in');
+      })
+      .catch(err => console.error(err));
   }
 
   return (
@@ -22,15 +29,16 @@ export default function Register() {
       <main className='content page__content wrapper'>
         <section className='auth'>
           <h1 className='content__title'>Регистрация</h1>
-          <form className='form'>
+          <form className='form' onSubmit={submitHandle}>
             <input
               id='email'
               className='form__text-input form__text-input_location_page'
               type='email'
               name='email'
+              autoComplete='email'
               placeholder='Email'
-              value={inputData.email}
-              onChange={handleInputsChange}
+              value={inputData.email || ''}
+              onChange={evt => handleInputsChange(evt, inputData, setInputData)}
               required
             />
             <span className='form__input-error email-error'></span>
@@ -39,9 +47,10 @@ export default function Register() {
               className='form__text-input form__text-input_location_page'
               type='password'
               name='password'
+              autoComplete='current-password'
               placeholder='Пароль'
-              value={inputData.password}
-              onChange={handleInputsChange}
+              value={inputData.password || ''}
+              onChange={evt => handleInputsChange(evt, inputData, setInputData)}
               required
             />
             <span className='form__input-error password-error'></span>

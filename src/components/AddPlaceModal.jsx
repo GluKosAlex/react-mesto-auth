@@ -33,7 +33,7 @@ export default function AddPlaceModal({ isOpen, onClose, onAddPlace, btnText }) 
         placeholder='Название'
         minLength='2'
         maxLength='30'
-        value={name}
+        value={name || ''}
         onChange={e => setName(e.target.value)}
         required
       />
@@ -44,7 +44,7 @@ export default function AddPlaceModal({ isOpen, onClose, onAddPlace, btnText }) 
         type='url'
         name='img-url'
         placeholder='Ссылка на картинку'
-        value={link}
+        value={link || ''}
         onChange={e => setLink(e.target.value)}
         required
       />

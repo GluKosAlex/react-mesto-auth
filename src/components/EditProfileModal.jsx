@@ -47,7 +47,7 @@ export default function EditProfileModal({ isOpen, onClose, onUpdateUser, btnTex
         minLength='2'
         maxLength='40'
         placeholder='Имя'
-        value={values.name}
+        value={values.name || ''}
         onChange={handleChange}
         required
       />
@@ -60,7 +60,7 @@ export default function EditProfileModal({ isOpen, onClose, onUpdateUser, btnTex
         minLength='2'
         maxLength='200'
         placeholder='О себе'
-        value={values.about}
+        value={values.about || ''}
         onChange={handleChange}
         required
       />
