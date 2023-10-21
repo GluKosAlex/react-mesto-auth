@@ -74,13 +74,14 @@ function App() {
         } else {
           setLoggedIn(true);
           localStorage.setItem('loggedIn', 'true');
-          res.json().then(({data}) => {
-            setUserEmail(data.email)});
+          res.json().then(({ data }) => {
+            setUserEmail(data.email);
+          });
         }
       })
       .catch(err => {
         console.error(err);
-        navigate('/sign-in', {replace: true});
+        navigate('/sign-in', { replace: true });
       });
   }
 
@@ -90,13 +91,16 @@ function App() {
   }, []);
 
   useEffect(() => {
-    Promise.all([api.getUserInfo(), api.getInitialCards()])
-      .then(([userData, cardsData]) => {
-        setCurrentUser(userData);
-        setCards(cardsData);
-      })
-      .catch(err => console.error(err));
-  }, []);
+    if (loggedIn) {
+      console.log("🚀 ~ file: App.jsx:95 ~ useEffect ~ loggedIn:", loggedIn)
+      Promise.all([api.getUserInfo(), api.getInitialCards()])
+        .then(([userData, cardsData]) => {
+          setCurrentUser(userData);
+          setCards(cardsData);
+        })
+        .catch(err => console.error(err));
+    }
+  }, [loggedIn]);
 
   function handleRegister({ email, password }) {
     return auth.register({ email, password }).then(res => {
@@ -135,6 +139,7 @@ function App() {
 
   function handleLogout() {
     setLoggedIn(false);
+    localStorage.setItem('loggedIn', 'false');
     localStorage.removeItem('token');
     navigate('/signin', { replace: true });
   }
