@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { config } from '../utils/constants';
 
 import Header from './Header';
+import FormValidator from '../utils/FormValidator.js';
 import { handleInputsChange } from './../utils/utils';
 
 export default function Register({ onRegister }) {
@@ -19,6 +21,16 @@ export default function Register({ onRegister }) {
       .catch(err => console.error(err));
   }
 
+  // Enable validation
+  const form = useRef();
+
+  useEffect(() => {
+    const validator = new FormValidator(config, form.current);
+    validator.enableValidation();
+    validator.toggleButtonState();
+    validator.removeValidationErrors();
+  }, []);
+
   return (
     <>
       <Header>
@@ -29,7 +41,7 @@ export default function Register({ onRegister }) {
       <main className='content page__content wrapper'>
         <section className='auth'>
           <h1 className='content__title'>Регистрация</h1>
-          <form className='form' onSubmit={submitHandle}>
+          <form ref={form} className='form' onSubmit={submitHandle}>
             <input
               id='email'
               className='form__text-input form__text-input_location_page'
@@ -37,6 +49,8 @@ export default function Register({ onRegister }) {
               name='email'
               autoComplete='email'
               placeholder='Email'
+              minLength='5'
+              maxLength='64'
               value={inputData.email || ''}
               onChange={evt => handleInputsChange(evt, inputData, setInputData)}
               required
@@ -49,6 +63,8 @@ export default function Register({ onRegister }) {
               name='password'
               autoComplete='current-password'
               placeholder='Пароль'
+              minLength='5'
+              maxLength='64'
               value={inputData.password || ''}
               onChange={evt => handleInputsChange(evt, inputData, setInputData)}
               required

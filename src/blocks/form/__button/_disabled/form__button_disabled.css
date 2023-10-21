@@ -2,9 +2,10 @@
   background-color: transparent;
   border: 1px solid #000;
   color: var(--main-bg-color);
+  transition: none;
   opacity: .2;
 }
 
 .form__button_disabled:hover {
-  background-color: transparent;
+  cursor: default;
 }

@@ -73,7 +73,6 @@ function App() {
           });
         } else {
           setLoggedIn(true);
-          // navigate('/');
           localStorage.setItem('loggedIn', 'true');
           res.json().then(({data}) => {
             setUserEmail(data.email)});
