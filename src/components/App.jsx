@@ -92,7 +92,6 @@ function App() {
 
   useEffect(() => {
     if (loggedIn) {
-      console.log("🚀 ~ file: App.jsx:95 ~ useEffect ~ loggedIn:", loggedIn)
       Promise.all([api.getUserInfo(), api.getInitialCards()])
         .then(([userData, cardsData]) => {
           setCurrentUser(userData);
