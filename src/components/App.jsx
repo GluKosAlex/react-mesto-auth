@@ -245,7 +245,7 @@ function App() {
           element={
             <ProtectedRoute loggedIn={loggedIn}>
               <Header className='header_with-menu'>
-                <nav className='header__menu menu menu_closed'>
+                <nav className='header__menu menu header__menu_closed'>
                   <p className='menu__user-email'>{userEmail}</p>
                   <Link to='sign-in' className='link menu__link' onClick={handleLogout} replace>
                     Выход
